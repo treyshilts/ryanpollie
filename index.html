@@ -58,13 +58,13 @@
 
     nav {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 0;
+      white-space: nowrap;
       margin-top: 24px;
       text-align: center;
-      font-size: clamp(22px, 3vw, 40px);
+      font-size: clamp(10px, 3vw, 40px);
       line-height: 1.2;
     }
 
@@ -84,7 +84,14 @@
       color: black;
       white-space: pre;
     }
-
+    
+    @media (max-width: 600px) {
+      nav {
+        font-size: clamp(10px, 3.2vw, 18px);
+        margin-top: 20px;
+      }
+    }
+    
     @media (max-width: 600px) {
       .homepage {
         padding: 20px 12px;
