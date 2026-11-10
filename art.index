@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>art — Ryan Pollie</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { font-family: Helvetica, Arial, sans-serif; color: #000; background: #fff; }
+    body { margin: 0; min-height: 100vh; }
+    body.modal-open { overflow: hidden; }
+    a { color: inherit; }
+    a:hover, button:hover { color: pink; }
+
+    .page-header {
+      position: relative;
+      padding: 24px 24px 0;
+      text-align: center;
+    }
+    .home {
+      position: absolute;
+      left: 24px;
+      top: 29px;
+      font-size: 15px;
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: 1;
+      font-weight: 400;
+      margin: 0 0 64px;
+    }
+    main {
+      width: min(1100px, calc(100% - 120px));
+      margin: 0 auto 100px;
+    }
+    .section { margin: 0 0 78px; }
+    .section h3 {
+      font-size: 25px;
+      font-weight: 400;
+      text-align: left;
+      margin: 0 0 34px;
+    }
+    .works {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 42px 28px;
+    }
+    .work {
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .thumb {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .work-title {
+      margin-top: 11px;
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .work-year {
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+    .work:focus-visible {
+      outline: 2px solid black;
+      outline-offset: 5px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 48px;
+      background: rgb(0 0 0 / .28);
+    }
+    .overlay.open { display: flex; }
+    .dialog {
+      position: relative;
+      width: min(720px, 100%);
+      max-height: 100%;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid black;
+      padding: 42px 34px 34px;
+    }
+    .close {
+      position: absolute;
+      top: 5px;
+      right: 12px;
+      background: none;
+      border: 0;
+      padding: 4px 6px;
+      font: 32px/1 Helvetica, Arial, sans-serif;
+      color: black;
+      cursor: pointer;
+    }
+    .full-image {
+      width: 100%;
+      max-height: min(56vh, 560px);
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 28px;
+    }
+    .details {
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    .details div { margin: 0; }
+    .details .first-line em { font-style: italic; }
+
+    @media (max-width: 650px) {
+      .page-header { padding: 22px 12px 0; }
+      .home {
+        left: 12px;
+        top: 24px;
+        font-size: 13px;
+      }
+      h1 {
+        font-size: 46px;
+        margin-bottom: 58px;
+      }
+      main {
+        width: calc(100% - 32px);
+        margin-bottom: 70px;
+      }
+      .section { margin-bottom: 56px; }
+      .section h3 {
+        font-size: 23px;
+        margin-bottom: 24px;
+      }
+      .works {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 34px;
+      }
+      .overlay { padding: 14px; }
+      .dialog { padding: 46px 18px 20px; }
+      .full-image {
+        max-height: 55vh;
+        margin-bottom: 20px;
+      }
+      .details { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <a class="home" href="./index.html">home</a>
+    <h1>art</h1>
+  </header>
+
+  <main id="art-content" aria-label="Artworks"></main>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="dialog" role="dialog" aria-modal="true"
+         aria-label="Artwork details" tabindex="-1">
+      <button type="button" class="close" id="close"
+              aria-label="Close artwork">×</button>
+      <div id="dialog-body"></div>
+    </div>
+  </div>
+
+  <script>
+    // Public TDS Worker URL.
+    // Verify this matches your deployed public Worker.
+    const ART_API =
+      'https://tds-web-editor-public.trey-d-shilts.workers.dev/api/public/ryan/art';
+
+    const main = document.getElementById('art-content');
+    const overlay = document.getElementById('overlay');
+    const dialogBody = document.getElementById('dialog-body');
+    const closeButton = document.getElementById('close');
+    let lastTrigger = null;
+
+    function text(tag, value, className) {
+      const node = document.createElement(tag);
+      node.textContent = value;
+      if (className) node.className = className;
+      return node;
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      dialogBody.replaceChildren();
+      lastTrigger?.focus();
+    }
+
+    function openModal(work, trigger) {
+      lastTrigger = trigger;
+      dialogBody.replaceChildren();
+
+      if (work.image) {
+        const img = document.createElement('img');
+        img.className = 'full-image';
+        img.src = work.image;
+        img.alt = work.title || 'Artwork';
+        dialogBody.appendChild(img);
+      }
+
+      const details = text('div', '', 'details');
+
+      if (work.title || work.year) {
+        const line = text('div', '', 'first-line');
+
+        if (work.title) {
+          line.appendChild(text('em', work.title));
+        }
+
+        if (work.year) {
+          line.appendChild(
+            document.createTextNode(
+              (work.title ? ', ' : '') + work.year
+            )
+          );
+        }
+
+        details.appendChild(line);
+      }
+
+      for (const field of ['medium', 'dimensions', 'price']) {
+        if (work[field]) {
+          details.appendChild(text('div', work[field]));
+        }
+      }
+
+      dialogBody.appendChild(details);
+
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      closeButton.focus();
+    }
+
+    closeButton.addEventListener('click', closeModal);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (!overlay.classList.contains('open')) return;
+
+      if (e.key === 'Escape') closeModal();
+
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        closeButton.focus();
+      }
+    });
+
+    function render(sections) {
+      main.replaceChildren();
+
+      for (const section of sections) {
+        const box = text('section', '', 'section');
+
+        if (section.title) {
+          box.appendChild(text('h3', section.title));
+        }
+
+        const grid = text('div', '', 'works');
+
+        for (const work of (section.works || [])) {
+          const button = text('button', '', 'work');
+          button.type = 'button';
+          button.setAttribute(
+            'aria-label',
+            'View ' + (work.title || 'artwork')
+          );
+
+          const thumb = text('div', '', 'thumb');
+
+          if (work.image) {
+            const img = document.createElement('img');
+            img.src = work.image;
+            img.alt = work.title || 'Artwork';
+            img.loading = 'lazy';
+            thumb.appendChild(img);
+          }
+
+          button.appendChild(thumb);
+
+          if (work.title) {
+            button.appendChild(
+              text('div', work.title, 'work-title')
+            );
+          }
+
+          if (work.year) {
+            button.appendChild(
+              text('div', work.year, 'work-year')
+            );
+          }
+
+          button.addEventListener('click', () => {
+            openModal(work, button);
+          });
+
+          grid.appendChild(button);
+        }
+
+        box.appendChild(grid);
+        main.appendChild(box);
+      }
+    }
+
+    fetch(ART_API, { cache: 'no-store' })
+      .then(async response => {
+        if (!response.ok) {
+          throw new Error('Art could not be loaded.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        render(
+          Array.isArray(data.sections)
+            ? data.sections
+            : []
+        );
+      })
+      .catch(error => {
+        console.error(error);
+        main.appendChild(
+          text('p', 'Art is temporarily unavailable.')
+        );
+      });
+  </script>
+</body>
+</html>
