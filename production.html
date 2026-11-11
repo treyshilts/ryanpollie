@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ryan Pollie — Music / Production</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>production — Ryan Pollie</title>
 
 <style>
 * {
@@ -161,7 +162,7 @@ a.work:hover {
 
 <header class="page-header">
   <a class="home" href="./index.html">home</a>
-  <h1 id="page-title"></h1>
+  <h1>production</h1>
 </header>
 
 <main id="content"></main>
@@ -170,28 +171,8 @@ a.work:hover {
 (() => {
   'use strict';
 
-  // This exact file works for both music.html
-  // and production.html.
-
-  const filename = location.pathname
-    .split('/')
-    .pop()
-    .toLowerCase();
-
-  const page = filename === 'production.html'
-    ? 'production'
-    : 'music';
-
-  document.title =
-    page + ' — Ryan Pollie';
-
-  document.getElementById(
-    'page-title'
-  ).textContent = page;
-
   const API =
-    'https://tds-web-editor-public.trey-d-shilts.workers.dev' +
-    '/api/public/ryan/' + page;
+    'https://tds-web-editor-public.trey-d-shilts.workers.dev/api/public/ryan/production';
 
   const root = document.getElementById('content');
 
@@ -244,8 +225,6 @@ a.work:hover {
       for (const work of (section.works || [])) {
         const link = validLink(work.link);
 
-        // Without a streaming link, show
-        // the cover without making it clickable.
         const item = el(
           link ? 'a' : 'div',
           undefined,
@@ -301,7 +280,7 @@ a.work:hover {
       });
 
       if (!response.ok) {
-        throw new Error('Unable to load content');
+        throw new Error('Unable to load production');
       }
 
       const data = await response.json();
@@ -318,7 +297,7 @@ a.work:hover {
       root.append(
         el(
           'p',
-          'Content is temporarily unavailable.'
+          'Production is temporarily unavailable.'
         )
       );
     }
