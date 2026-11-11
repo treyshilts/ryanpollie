@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>press — Ryan Pollie</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: white;
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: pink;
+}
+
+.page-header {
+  position: relative;
+  padding: 24px 24px 0;
+  text-align: center;
+}
+
+.home {
+  position: absolute;
+  left: 24px;
+  top: 29px;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: clamp(40px, 6vw, 76px);
+  line-height: 1;
+  font-weight: 400;
+  margin: 0 0 64px;
+}
+
+main {
+  width: min(1100px, calc(100% - 120px));
+  margin: 0 auto 100px;
+}
+
+.press-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.press-item {
+  display: block;
+  font-size: 19px;
+  line-height: 1.5;
+  text-align: left;
+  color: black;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.press-item strong {
+  font-weight: 700;
+}
+
+a.press-item:hover {
+  color: pink;
+}
+
+@media (max-width: 650px) {
+  .page-header {
+    padding: 22px 12px 0;
+  }
+
+  .home {
+    left: 12px;
+    top: 24px;
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 46px;
+    margin-bottom: 58px;
+  }
+
+  main {
+    width: calc(100% - 32px);
+    margin-bottom: 70px;
+  }
+
+  .press-list {
+    gap: 20px;
+  }
+
+  .press-item {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="page-header">
+  <a class="home" href="./index.html">home</a>
+  <h1>press</h1>
+</header>
+
+<main>
+  <div class="press-list" id="press-list"></div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  const API =
+    'https://tds-web-editor-public.trey-d-shilts.workers.dev/api/public/ryan/press';
+
+  const root = document.getElementById(
+    'press-list'
+  );
+
+  function validLink(value) {
+    if (!value) return null;
+
+    try {
+      const url = new URL(value);
+
+      return ['https:', 'http:'].includes(url.protocol)
+        ? url.href
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function render(items) {
+    root.replaceChildren();
+
+    for (const item of items) {
+      const link = validLink(item.link);
+
+      const row = document.createElement(
+        link ? 'a' : 'div'
+      );
+
+      row.className = 'press-item';
+
+      if (link) {
+        row.href = link;
+        row.target = '_blank';
+        row.rel = 'noopener noreferrer';
+      }
+
+      const parts = [];
+
+      if (item.headline) {
+        parts.push('headline');
+      }
+
+      if (item.publication) {
+        parts.push('publication');
+      }
+
+      if (item.year) {
+        parts.push('year');
+      }
+
+      parts.forEach((part, index) => {
+        if (index > 0) {
+          row.append(
+            document.createTextNode(', ')
+          );
+        }
+
+        if (part === 'headline') {
+          const strong =
+            document.createElement('strong');
+
+          strong.textContent = item.headline;
+
+          row.append(strong);
+        }
+
+        if (part === 'publication') {
+          row.append(
+            document.createTextNode(
+              item.publication
+            )
+          );
+        }
+
+        if (part === 'year') {
+          row.append(
+            document.createTextNode(
+              item.year
+            )
+          );
+        }
+      });
+
+      if (parts.length) {
+        root.append(row);
+      }
+    }
+  }
+
+  async function load() {
+    try {
+      const response = await fetch(API, {
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error('Unable to load press');
+      }
+
+      const data = await response.json();
+
+      render(
+        Array.isArray(data.items)
+          ? data.items
+          : []
+      );
+
+    } catch (error) {
+      console.error(error);
+
+      const message = document.createElement('p');
+
+      message.textContent =
+        'Press is temporarily unavailable.';
+
+      root.append(message);
+    }
+  }
+
+  load();
+})();
+</script>
+
+</body>
+</html>
