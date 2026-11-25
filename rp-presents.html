@@ -1,0 +1,1206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>RP Presents — Ryan Pollie</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: white;
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: pink;
+}
+
+/* =====================================
+   PAGE HEADER
+   ===================================== */
+
+.page-header {
+  position: relative;
+  padding: 24px 24px 0;
+  text-align: center;
+}
+
+.home {
+  position: absolute;
+  left: 24px;
+  top: 29px;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: clamp(40px, 6vw, 76px);
+  font-weight: 400;
+  line-height: 1;
+  margin: 0 0 64px;
+}
+
+/* =====================================
+   MAIN CONTENT
+   ===================================== */
+
+main {
+  width: min(1100px, calc(100% - 120px));
+  margin: 0 auto 100px;
+}
+
+.event {
+  margin: 0 0 78px;
+}
+
+.event h3 {
+  font-size: 25px;
+  font-weight: 400;
+  text-align: left;
+  line-height: 1.25;
+  margin: 0 0 22px;
+}
+
+.description {
+  font-size: 17px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0 0 28px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* =====================================
+   SHARED PHOTOGRAPH BUTTONS
+   ===================================== */
+
+.photo {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: white;
+  overflow: hidden;
+  cursor: pointer;
+  appearance: none;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo:focus-visible {
+  outline: 2px solid black;
+  outline-offset: 3px;
+}
+
+/* =====================================
+   HIGHLAND PARK — FEATURED PHOTOS
+   ===================================== */
+
+/*
+  Desktop:
+
+  One portrait image on the left.
+  Two landscape images on the right.
+  Their outer edges align.
+*/
+
+.featured {
+  display: grid;
+
+  grid-template-columns:
+    calc(47.0588235294% - 1.6470588235px)
+    minmax(0, 1fr);
+
+  gap: 14px;
+  align-items: start;
+}
+
+.featured-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.portrait {
+  aspect-ratio: 2 / 3;
+}
+
+.landscape {
+  aspect-ratio: 3 / 2;
+}
+
+/* =====================================
+   HIGHLAND PARK — SCROLLING GALLERY
+   ===================================== */
+
+.carousel {
+  display: grid;
+
+  grid-template-columns:
+    24px minmax(0, 1fr) 24px;
+
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+
+  overscroll-behavior-x: contain;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .photo {
+  flex: 0 0 calc((100% - 24px) / 3);
+  aspect-ratio: 3 / 2;
+}
+
+.arrow {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: black;
+  font: 25px/1 Helvetica, Arial, sans-serif;
+  padding: 8px 0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.arrow:hover {
+  color: pink;
+}
+
+.arrow:disabled {
+  visibility: hidden;
+}
+
+/* =====================================
+   GOOD FOLK — PHOTO GRID
+   ===================================== */
+
+.photo-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.photo-grid .photo {
+  aspect-ratio: 1 / 1;
+}
+
+/* =====================================
+   FIXED-SIZE IMAGE LIGHTBOX
+   ===================================== */
+
+html.lightbox-open {
+  overflow: hidden;
+}
+
+body.lightbox-open {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+
+  width: min(840px, calc(100vw - 96px));
+
+  height: min(680px, 78vh);
+  height: min(680px, 78dvh);
+
+  max-width: none;
+  max-height: none;
+
+  padding: 42px 14px 20px;
+
+  background: white;
+  color: black;
+
+  border: 2px solid black;
+  border-radius: 0;
+
+  overflow: hidden;
+}
+
+.lightbox[open] {
+  display: grid;
+
+  grid-template-columns:
+    38px minmax(0, 1fr) 38px;
+
+  grid-template-rows:
+    minmax(0, 1fr);
+
+  align-items: center;
+  gap: 8px;
+}
+
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, .28);
+}
+
+.lightbox-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  object-fit: contain;
+}
+
+.lightbox-close {
+  appearance: none;
+  position: absolute;
+  top: 5px;
+  right: 12px;
+
+  background: none;
+  border: 0;
+
+  color: black;
+  font: 32px/1 Helvetica, Arial, sans-serif;
+
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.lightbox-close:hover {
+  color: pink;
+}
+
+.lightbox .arrow {
+  font-size: 28px;
+}
+
+/* =====================================
+   MOBILE
+   ===================================== */
+
+@media (max-width: 650px) {
+  .page-header {
+    padding: 22px 12px 0;
+  }
+
+  .home {
+    left: 12px;
+    top: 24px;
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: clamp(30px, 9vw, 46px);
+    margin-bottom: 58px;
+    padding-top: 20px;
+  }
+
+  main {
+    width: calc(100% - 32px);
+    margin-bottom: 70px;
+  }
+
+  .event {
+    margin-bottom: 56px;
+  }
+
+  .event h3 {
+    font-size: 23px;
+    margin-bottom: 18px;
+  }
+
+  .description {
+    font-size: 16px;
+    margin-bottom: 22px;
+  }
+
+  /*
+    Featured photos become one horizontal
+    row, with three equally wide columns.
+  */
+
+  .featured {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    gap: 6px;
+    align-items: center;
+  }
+
+  .featured-right {
+    display: contents;
+  }
+
+  .carousel {
+    grid-template-columns:
+      14px minmax(0, 1fr) 14px;
+
+    gap: 4px;
+    margin-top: 16px;
+  }
+
+  .carousel-track {
+    gap: 6px;
+  }
+
+  .carousel-track .photo {
+    flex: 0 0 calc((100% - 6px) / 2);
+  }
+
+  .carousel .arrow {
+    font-size: 20px;
+  }
+
+  .photo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+  .lightbox {
+    width: calc(100vw - 28px);
+
+    height: min(620px, 78vh);
+    height: min(620px, 78dvh);
+
+    padding: 42px 6px 18px;
+  }
+
+  .lightbox[open] {
+    grid-template-columns:
+      24px minmax(0, 1fr) 24px;
+
+    gap: 3px;
+  }
+
+  .lightbox .arrow {
+    font-size: 23px;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- =====================================
+     HEADER
+     ===================================== -->
+
+<header class="page-header">
+  <a class="home" href="./index.html">home</a>
+
+  <h1>RP Presents</h1>
+</header>
+
+<main>
+
+  <!-- ===================================
+       HIGHLAND PARK FOLK FESTIVAL
+       =================================== -->
+
+  <section class="event">
+
+    <h3>Highland Park Folk Festival</h3>
+
+    <p
+      id="festival-description"
+      class="description"
+      hidden
+    ></p>
+
+    <div
+      id="festival-featured"
+      class="featured"
+      hidden
+    ></div>
+
+    <div
+      id="festival-carousel"
+      class="carousel"
+      hidden
+    >
+      <button
+        type="button"
+        id="carousel-prev"
+        class="arrow"
+        aria-label="Scroll gallery left"
+      >&lt;</button>
+
+      <div
+        id="carousel-track"
+        class="carousel-track"
+        aria-label="Highland Park photo gallery"
+      ></div>
+
+      <button
+        type="button"
+        id="carousel-next"
+        class="arrow"
+        aria-label="Scroll gallery right"
+      >&gt;</button>
+    </div>
+
+  </section>
+
+  <!-- ===================================
+       GOOD FOLK AT THE FABLE
+       =================================== -->
+
+  <section class="event">
+
+    <h3>Good Folk at The Fable</h3>
+
+    <p
+      id="fable-description"
+      class="description"
+      hidden
+    ></p>
+
+    <div
+      id="fable-grid"
+      class="photo-grid"
+      hidden
+    ></div>
+
+  </section>
+
+  <p id="load-error" hidden></p>
+
+</main>
+
+<!-- =====================================
+     LIGHTBOX
+     ===================================== -->
+
+<dialog
+  id="lightbox"
+  class="lightbox"
+  aria-label="Photograph viewer"
+>
+  <button
+    type="button"
+    id="lightbox-close"
+    class="lightbox-close"
+    aria-label="Close photograph viewer"
+    autofocus
+  >×</button>
+
+  <button
+    type="button"
+    id="lightbox-prev"
+    class="arrow"
+    aria-label="Previous photograph"
+  >&lt;</button>
+
+  <img
+    id="lightbox-image"
+    class="lightbox-image"
+    alt=""
+  >
+
+  <button
+    type="button"
+    id="lightbox-next"
+    class="arrow"
+    aria-label="Next photograph"
+  >&gt;</button>
+</dialog>
+
+<script>
+(() => {
+  'use strict';
+
+  const API =
+    'https://tds-web-editor-public.trey-d-shilts.workers.dev/api/public/ryan/rp-presents';
+
+  const MEDIA_PREFIX =
+    'https://tds-web-editor-public.trey-d-shilts.workers.dev/api/media/ryan/';
+
+  // =====================================
+  // SHARED ELEMENTS
+  // =====================================
+
+  const lightbox =
+    document.getElementById('lightbox');
+
+  const lightboxImage =
+    document.getElementById('lightbox-image');
+
+  const closeButton =
+    document.getElementById('lightbox-close');
+
+  const previousButton =
+    document.getElementById('lightbox-prev');
+
+  const nextButton =
+    document.getElementById('lightbox-next');
+
+  let currentPhotos = [];
+  let currentIndex = 0;
+  let currentLabel = '';
+  let savedScroll = 0;
+  let lastTrigger = null;
+
+  function validPhotos(values) {
+    if (!Array.isArray(values)) {
+      return [];
+    }
+
+    return values.filter(value => {
+      return (
+        typeof value === 'string' &&
+        value.startsWith(MEDIA_PREFIX) &&
+        /^[a-f0-9-]{36}$/.test(
+          value.slice(MEDIA_PREFIX.length)
+        )
+      );
+    });
+  }
+
+  function setDescription(id, value) {
+    const element =
+      document.getElementById(id);
+
+    const description =
+      typeof value === 'string'
+        ? value.trim()
+        : '';
+
+    element.textContent = description;
+    element.hidden = !description;
+  }
+
+  // =====================================
+  // LIGHTBOX
+  // =====================================
+
+  function updateLightbox() {
+    if (!currentPhotos.length) return;
+
+    lightboxImage.src =
+      currentPhotos[currentIndex];
+
+    lightboxImage.alt =
+      currentLabel +
+      ' — photograph ' +
+      (currentIndex + 1) +
+      ' of ' +
+      currentPhotos.length;
+
+    const single =
+      currentPhotos.length <= 1;
+
+    previousButton.disabled = single;
+    nextButton.disabled = single;
+  }
+
+  function openLightbox(
+    photos,
+    index,
+    label,
+    trigger
+  ) {
+    if (!photos.length || lightbox.open) {
+      return;
+    }
+
+    currentPhotos = photos;
+    currentIndex = index;
+    currentLabel = label;
+    lastTrigger = trigger;
+
+    savedScroll = window.scrollY;
+
+    document.documentElement.classList
+      .add('lightbox-open');
+
+    document.body.style.top =
+      '-' + savedScroll + 'px';
+
+    document.body.classList
+      .add('lightbox-open');
+
+    updateLightbox();
+
+    lightbox.showModal();
+
+    closeButton.focus({
+      preventScroll: true
+    });
+  }
+
+  function moveLightbox(delta) {
+    if (
+      !lightbox.open ||
+      currentPhotos.length <= 1
+    ) {
+      return;
+    }
+
+    currentIndex =
+      (
+        currentIndex +
+        delta +
+        currentPhotos.length
+      ) % currentPhotos.length;
+
+    updateLightbox();
+  }
+
+  function closeLightbox() {
+    if (lightbox.open) {
+      lightbox.close();
+    }
+  }
+
+  closeButton.addEventListener(
+    'click',
+    closeLightbox
+  );
+
+  previousButton.addEventListener(
+    'click',
+    () => moveLightbox(-1)
+  );
+
+  nextButton.addEventListener(
+    'click',
+    () => moveLightbox(1)
+  );
+
+  lightbox.addEventListener(
+    'keydown',
+    event => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        moveLightbox(-1);
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        moveLightbox(1);
+      }
+    }
+  );
+
+  // Close when clicking outside the box.
+
+  lightbox.addEventListener(
+    'click',
+    event => {
+      if (event.target !== lightbox) {
+        return;
+      }
+
+      const bounds =
+        lightbox.getBoundingClientRect();
+
+      if (
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom
+      ) {
+        closeLightbox();
+      }
+    }
+  );
+
+  // Also runs when Escape closes the dialog.
+
+  lightbox.addEventListener(
+    'close',
+    () => {
+      document.documentElement.classList
+        .remove('lightbox-open');
+
+      document.body.classList
+        .remove('lightbox-open');
+
+      document.body.style.top = '';
+
+      window.scrollTo(0, savedScroll);
+
+      if (lastTrigger) {
+        lastTrigger.focus({
+          preventScroll: true
+        });
+      }
+
+      lightboxImage.removeAttribute('src');
+
+      currentPhotos = [];
+      lastTrigger = null;
+    }
+  );
+
+  // =====================================
+  // CREATE PHOTO THUMBNAIL
+  // =====================================
+
+  function photoButton(
+    image,
+    allPhotos,
+    index,
+    label,
+    className = ''
+  ) {
+    const button =
+      document.createElement('button');
+
+    button.type = 'button';
+
+    button.className =
+      'photo' +
+      (className ? ' ' + className : '');
+
+    button.setAttribute(
+      'aria-label',
+      'View ' + label +
+      ' photograph ' + (index + 1)
+    );
+
+    const img =
+      document.createElement('img');
+
+    img.src = image;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+
+    button.append(img);
+
+    button.addEventListener(
+      'click',
+      () => {
+        openLightbox(
+          allPhotos,
+          index,
+          label,
+          button
+        );
+      }
+    );
+
+    return button;
+  }
+
+  // =====================================
+  // HIGHLAND PARK FEATURED IMAGES
+  // =====================================
+
+  function renderFeatured(
+    featured,
+    allPhotos
+  ) {
+    const root =
+      document.getElementById(
+        'festival-featured'
+      );
+
+    root.replaceChildren();
+
+    if (!featured.length) {
+      root.hidden = true;
+      return;
+    }
+
+    const label =
+      'Highland Park Folk Festival';
+
+    root.append(
+      photoButton(
+        featured[0],
+        allPhotos,
+        0,
+        label,
+        'portrait'
+      )
+    );
+
+    const right =
+      document.createElement('div');
+
+    right.className = 'featured-right';
+
+    if (featured[1]) {
+      right.append(
+        photoButton(
+          featured[1],
+          allPhotos,
+          1,
+          label,
+          'landscape'
+        )
+      );
+    }
+
+    if (featured[2]) {
+      right.append(
+        photoButton(
+          featured[2],
+          allPhotos,
+          2,
+          label,
+          'landscape'
+        )
+      );
+    }
+
+    root.append(right);
+    root.hidden = false;
+  }
+
+  // =====================================
+  // INFINITELY SCROLLING GALLERY
+  // =====================================
+
+  let carouselObserver = null;
+  let galleryCycle = 0;
+  let galleryStep = 0;
+  let galleryBlockSize = 0;
+
+  const carousel =
+    document.getElementById(
+      'festival-carousel'
+    );
+
+  const track =
+    document.getElementById(
+      'carousel-track'
+    );
+
+  function measureCarousel() {
+    if (
+      !track.children.length ||
+      !galleryBlockSize
+    ) {
+      return;
+    }
+
+    const first = track.children[0];
+
+    const next = track.children[1];
+
+    const repeat =
+      track.children[galleryBlockSize];
+
+    if (!next || !repeat) return;
+
+    galleryStep =
+      next.offsetLeft -
+      first.offsetLeft;
+
+    galleryCycle =
+      repeat.offsetLeft -
+      first.offsetLeft;
+
+    if (galleryCycle > 0) {
+      track.scrollLeft = galleryCycle;
+    }
+  }
+
+  function normalizeCarousel() {
+    if (galleryCycle <= 0) return;
+
+    const position = track.scrollLeft;
+
+    if (position < galleryCycle - 1) {
+      track.scrollLeft =
+        position + galleryCycle;
+
+    } else if (
+      position >= galleryCycle * 2
+    ) {
+      track.scrollLeft =
+        position - galleryCycle;
+    }
+  }
+
+  track.addEventListener(
+    'scroll',
+    normalizeCarousel,
+    { passive: true }
+  );
+
+  document.getElementById('carousel-prev')
+    .addEventListener('click', () => {
+      track.scrollLeft -= galleryStep;
+      normalizeCarousel();
+    });
+
+  document.getElementById('carousel-next')
+    .addEventListener('click', () => {
+      track.scrollLeft += galleryStep;
+      normalizeCarousel();
+    });
+
+  function renderCarousel(
+    gallery,
+    featuredCount,
+    allPhotos
+  ) {
+    if (carouselObserver) {
+      carouselObserver.disconnect();
+    }
+
+    galleryCycle = 0;
+    galleryStep = 0;
+    galleryBlockSize = 0;
+
+    track.replaceChildren();
+
+    if (!gallery.length) {
+      carousel.hidden = true;
+      return;
+    }
+
+    carousel.hidden = false;
+
+    const label =
+      'Highland Park Folk Festival';
+
+    /*
+      Repeat short galleries enough times
+      to fill the viewport.
+
+      Then create three copies of that block.
+
+      Scrolling wraps between identical
+      visual positions.
+    */
+
+    const repetitions = Math.max(
+      1,
+      Math.ceil(4 / gallery.length)
+    );
+
+    galleryBlockSize =
+      gallery.length * repetitions;
+
+    const fragment =
+      document.createDocumentFragment();
+
+    for (let copy = 0; copy < 3; copy++) {
+      for (
+        let repetition = 0;
+        repetition < repetitions;
+        repetition++
+      ) {
+        gallery.forEach((image, index) => {
+          const button = photoButton(
+            image,
+            allPhotos,
+            featuredCount + index,
+            label,
+            'landscape'
+          );
+
+          // Duplicate thumbnails remain
+          // clickable, but only one set
+          // enters the keyboard tab order.
+
+          if (
+            copy !== 1 ||
+            repetition !== 0
+          ) {
+            button.tabIndex = -1;
+
+            button.setAttribute(
+              'aria-hidden',
+              'true'
+            );
+          }
+
+          fragment.append(button);
+        });
+      }
+    }
+
+    track.append(fragment);
+
+    requestAnimationFrame(
+      measureCarousel
+    );
+
+    if ('ResizeObserver' in window) {
+      carouselObserver =
+        new ResizeObserver(
+          measureCarousel
+        );
+
+      carouselObserver.observe(track);
+    }
+  }
+
+  window.addEventListener(
+    'resize',
+    measureCarousel
+  );
+
+  // =====================================
+  // GOOD FOLK PHOTO GRID
+  // =====================================
+
+  function renderFable(photos) {
+    const root =
+      document.getElementById(
+        'fable-grid'
+      );
+
+    root.replaceChildren();
+
+    root.hidden = !photos.length;
+
+    photos.forEach((image, index) => {
+      root.append(
+        photoButton(
+          image,
+          photos,
+          index,
+          'Good Folk at The Fable'
+        )
+      );
+    });
+  }
+
+  // =====================================
+  // RENDER PAGE
+  // =====================================
+
+  function render(data) {
+    const first = data.first || {};
+    const second = data.second || {};
+
+    setDescription(
+      'festival-description',
+      first.description
+    );
+
+    setDescription(
+      'fable-description',
+      second.description
+    );
+
+    const featured =
+      validPhotos(first.featured)
+        .slice(0, 3);
+
+    const gallery =
+      validPhotos(first.gallery);
+
+    // Both Highland Park photo collections
+    // share one lightbox sequence.
+
+    const festivalPhotos = [
+      ...featured,
+      ...gallery
+    ];
+
+    renderFeatured(
+      featured,
+      festivalPhotos
+    );
+
+    renderCarousel(
+      gallery,
+      featured.length,
+      festivalPhotos
+    );
+
+    const fablePhotos =
+      validPhotos(second.photos)
+        .slice(0, 60);
+
+    renderFable(fablePhotos);
+  }
+
+  // =====================================
+  // LOAD PUBLISHED CONTENT
+  // =====================================
+
+  async function load() {
+    try {
+      const response = await fetch(API, {
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          'Unable to load RP Presents'
+        );
+      }
+
+      const data = await response.json();
+
+      render(data);
+
+    } catch (error) {
+      console.error(error);
+
+      const message =
+        document.getElementById(
+          'load-error'
+        );
+
+      message.textContent =
+        'Content is temporarily unavailable.';
+
+      message.hidden = false;
+    }
+  }
+
+  load();
+})();
+</script>
+
+</body>
+</html>
