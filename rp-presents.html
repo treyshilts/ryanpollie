@@ -367,14 +367,17 @@ body.lightbox-open {
 
   .featured {
     grid-template-columns:
-      repeat(3, minmax(0, 1fr));
-
+      calc(47.0588235294% - 0.7058823529px)
+      minmax(0, 1fr);
+  
     gap: 6px;
-    align-items: center;
+    align-items: start;
   }
-
+  
   .featured-right {
-    display: contents;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .carousel {
